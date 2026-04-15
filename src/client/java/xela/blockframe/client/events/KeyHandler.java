@@ -7,9 +7,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import xela.blockframe.BlockFrame;
 import xela.blockframe.client.networking.ServerBoundMovementPayload;
+
+import java.util.List;
 
 public class KeyHandler {
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID, "blockframe"));
@@ -30,7 +33,9 @@ public class KeyHandler {
             while (KeyHandler.doubleJump.consumeClick()){
                 if (client.player != null){
                     client.player.sendSystemMessage(Component.literal("sending"));
-                    var longArray = new long[0,0,0];
+                    var longArray = new List<Vec3>() {
+                        new Vec3(0,0.3,0);
+                    } ;
                     var payload = new ServerBoundMovementPayload(longArray);
                     ClientPlayNetworking.send(payload);
 

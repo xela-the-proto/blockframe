@@ -14,8 +14,11 @@ import xela.blockframe.BlockFrame;
 import xela.blockframe.client.events.KeyHandler;
 
 import java.util.List;
-                                        //x,y,z
-public record ServerBoundMovementPayload(long[] pushVector)implements CustomPacketPayload {
+
+import static xela.blockframe.client.codec.Vec3Codec.VEC3_CODEC;
+
+//x,y,z
+public record ServerBoundMovementPayload(List<Vec3> pushVector)implements CustomPacketPayload {
 
     public static final Identifier BLOCKFRAME_MOVEMENT_ID = Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID,
             "blockframe_movement");
@@ -23,8 +26,7 @@ public record ServerBoundMovementPayload(long[] pushVector)implements CustomPack
             new CustomPacketPayload.Type<>(BLOCKFRAME_MOVEMENT_ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerBoundMovementPayload> CODEC = StreamCodec.
-            composite(
-                    ByteBufCodecs.LONG_ARRAY, ServerBoundMovementPayload::pushVector, ServerBoundMovementPayload::new);
+            composite(VEC3_CODEC.apply(ByteBufCodecs.list()), ServerBoundMovementPayload::pushVector, ServerBoundMovementPayload::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
