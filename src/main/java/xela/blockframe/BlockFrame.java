@@ -5,6 +5,8 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xela.blockframe.items.RegisterItems;
+import xela.blockframe.network.ClientPayloadRegistrar;
+import xela.blockframe.network.ServerPayloadRegistrar;
 
 public class BlockFrame implements ModInitializer {
 	public static final String MOD_ID = "blockframe";
@@ -22,5 +24,8 @@ public class BlockFrame implements ModInitializer {
 
 		BlockFrame.LOGGER.info(":3");
 		RegisterItems.init();
+		BlockFrame.LOGGER.info("Init networking");
+		ClientPayloadRegistrar.init();
+		ServerPayloadRegistrar.init();
 	}
 }
