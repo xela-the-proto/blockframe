@@ -25,6 +25,7 @@ public class BlockFrame implements ModInitializer {
 		BlockFrame.LOGGER.info(":3");
 		RegisterItems.init();
 		BlockFrame.LOGGER.info("Init networking");
+		//Registrar order is important here, first Client then Server since the Client part registers packets
 		ClientPayloadRegistrar.init();
 		ServerPayloadRegistrar.init();
 	}

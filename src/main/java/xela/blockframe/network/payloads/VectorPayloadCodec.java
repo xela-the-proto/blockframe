@@ -5,7 +5,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 import xela.blockframe.network.payloads.classes.VectorPayload;
-
+/*
+Individual files for custom codecs
+ */
 public class VectorPayloadCodec {
     public static final StreamCodec<ByteBuf, VectorPayload> CODEC = StreamCodec.composite(
             ByteBufCodecs.DOUBLE,   v -> v.pushVector.x,

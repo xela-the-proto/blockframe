@@ -30,10 +30,11 @@ public class KeyHandler {
     public static void registerDoubleJumpKeybind(){
         ClientTickEvents.END_CLIENT_TICK.register(client ->{
             while (KeyHandler.doubleJump.consumeClick()){
-                if (client.player != null){
+                //TODO: Client still sends the packet even though the player has just started jumping
+                if (client.player != null &&!client.player.onGround()){
                     var longArray = new VectorPayload();
                     longArray.UUID = client.player.getStringUUID();
-                    longArray.pushVector = new Vec3(0.1f,0.5f,0);
+                    longArray.pushVector = new Vec3(0,0.25f,0);
 
                     var payload = new ServerBoundMovementPayload(longArray);
                     //Send double jump

@@ -8,7 +8,9 @@ import net.minecraft.world.entity.LivingEntity;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
 
 import java.util.UUID;
-
+/*
+The server payload register actually registers and defines what to do when a packet is inbound
+ */
 public class ServerPayloadRegistrar {
     static public  void init(){
         registerDoubleJump();
@@ -16,14 +18,13 @@ public class ServerPayloadRegistrar {
 
     static private void registerDoubleJump(){
         ServerPlayNetworking.registerGlobalReceiver(ServerBoundMovementPayload.TYPE, ((payload, context) -> {
+
             Log.info( LogCategory.LOG, "[SERVER] received packet");
             Entity entity = context.player().level().getEntity(UUID.fromString(payload.vecPayload().UUID));
 
             if (entity instanceof LivingEntity livingEntity){
                 Log.info(LogCategory.LOG, "[SERVER] pushing with " + payload.vecPayload().pushVector.toString());
-
-                livingEntity.addDeltaMovement(payload.vecPayload().pushVector.add(livingEntity.getDeltaMovement().x,
-                        0,livingEntity.getDeltaMovement().z));
+                livingEntity.addDeltaMovement(payload.vecPayload().pushVector);
                 livingEntity.hurtMarked = true;
             }
         }));
