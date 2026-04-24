@@ -12,7 +12,6 @@ import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class DoubleJumpRegister {
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID, "blockframe"));
@@ -24,30 +23,37 @@ public class DoubleJumpRegister {
             CATEGORY
     ));
 
-    private static int TICK_DELAY = 3;
+    private static int TICK_DELAY = 5;
 
     public static void registerDoubleJumpKeybind(){
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->{
 
-            if (client.player.isJumping()){
-                TICK_DELAY--;
-            }
+            if (client.player != null){
+                if (client.player.isJumping()){
+                    TICK_DELAY--;
+                    BlockFrame.LOGGER.info("Decrement delay");
+                }
 
-            while (DoubleJumpRegister.doubleJump.consumeClick()){
-                //TODO: Client still sends the packet even though the player has just started jumping
-                if (client.player != null && TICK_DELAY < 0){
-                    var longArray = new VectorPayload();
-                    longArray.UUID = client.player.getStringUUID();
-                    longArray.pushVector = new Vec3(0,0.25f,0);
+                while (DoubleJumpRegister.doubleJump.consumeClick()){
+                    //TODO: Detection is wonky and doesnt feel smooth
+                    if (client.player != null && TICK_DELAY < 0){
+                        var longArray = new VectorPayload();
+                        longArray.UUID = client.player.getStringUUID();
+                        longArray.pushVector = new Vec3(0,0.25,0);
 
-                    var payload = new ServerBoundMovementPayload(longArray);
-                    //Send double jump
-                    ClientPlayNetworking.send(payload);
-                    TICK_DELAY = 3;
+                        var payload = new ServerBoundMovementPayload(longArray);
+                        //Send double jump
+                        ClientPlayNetworking.send(payload);
+                        if (!client.player.onGround()){
+                            BlockFrame.LOGGER.info("Reset double jump");
+                            TICK_DELAY = 5;
+                        }
 
+                    }
                 }
             }
+
         });
     }
 }

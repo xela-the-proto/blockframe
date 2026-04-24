@@ -24,9 +24,8 @@ public class ServerPayloadRegistrar {
 
             if (entity instanceof LivingEntity livingEntity){
                 Log.info(LogCategory.LOG, "[SERVER] pushing with " + payload.vecPayload().pushVector.toString());
-                var current_delta = livingEntity.getDeltaMovement();
-                current_delta.add(payload.vecPayload().pushVector);
-                livingEntity.setDeltaMovement(current_delta);
+                livingEntity.push(payload.vecPayload().pushVector);
+                livingEntity.getDeltaMovement().add(payload.vecPayload().pushVector);
                 livingEntity.hurtMarked = true;
             }
         }));
