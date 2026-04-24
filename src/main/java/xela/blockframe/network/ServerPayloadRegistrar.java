@@ -16,6 +16,7 @@ public class ServerPayloadRegistrar {
         registerDoubleJump();
     }
 
+
     static private void registerDoubleJump(){
         ServerPlayNetworking.registerGlobalReceiver(ServerBoundMovementPayload.TYPE, ((payload, context) -> {
 

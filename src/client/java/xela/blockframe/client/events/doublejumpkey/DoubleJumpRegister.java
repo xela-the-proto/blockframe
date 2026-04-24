@@ -12,6 +12,8 @@ import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
 
+import static xela.blockframe.data.DataAttachments.DOUBLE_JUMP_DATA_ATTACHMENT;
+
 
 public class DoubleJumpRegister {
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID, "blockframe"));
@@ -23,21 +25,18 @@ public class DoubleJumpRegister {
             CATEGORY
     ));
 
-    private static int TICK_DELAY = 5;
+
 
     public static void registerDoubleJumpKeybind(){
 
         ClientTickEvents.END_CLIENT_TICK.register(client ->{
 
             if (client.player != null){
-                if (client.player.isJumping()){
-                    TICK_DELAY--;
-                    BlockFrame.LOGGER.info("Decrement delay");
-                }
 
                 while (DoubleJumpRegister.doubleJump.consumeClick()){
+                    BlockFrame.LOGGER.info(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT).toString());
                     //TODO: Detection is wonky and doesnt feel smooth
-                    if (client.player != null && TICK_DELAY < 0){
+                    if (client.player != null && Boolean.TRUE.equals(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT))){
                         var longArray = new VectorPayload();
                         longArray.UUID = client.player.getStringUUID();
                         longArray.pushVector = new Vec3(0,0.25,0);
@@ -45,12 +44,14 @@ public class DoubleJumpRegister {
                         var payload = new ServerBoundMovementPayload(longArray);
                         //Send double jump
                         ClientPlayNetworking.send(payload);
-                        if (!client.player.onGround()){
-                            BlockFrame.LOGGER.info("Reset double jump");
-                            TICK_DELAY = 5;
-                        }
-
                     }
+                }
+
+                if (!client.player.onGround()){
+                     client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, false);
+                    BlockFrame.LOGGER.info("Attachment to false");
+                }else if (client.player.getDeltaMovement().y > 0 && Boolean.TRUE.equals(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT))){
+                    client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, true);
                 }
             }
 

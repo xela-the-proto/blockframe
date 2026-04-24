@@ -6,7 +6,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.NonNull;
 import xela.blockframe.BlockFrame;
-import xela.blockframe.network.payloads.VectorPayloadCodec;
+import xela.blockframe.network.payloads.Codecs;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 
 
@@ -22,7 +22,7 @@ public record ServerBoundMovementPayload(VectorPayload vecPayload)implements Cus
             new CustomPacketPayload.Type<>(BLOCKFRAME_MOVEMENT_ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerBoundMovementPayload> CODEC = StreamCodec.
-            composite(VectorPayloadCodec.CODEC, ServerBoundMovementPayload::vecPayload, ServerBoundMovementPayload::new);
+            composite(Codecs.VECTOR_PAYLOAD_STREAM_CODEC, ServerBoundMovementPayload::vecPayload, ServerBoundMovementPayload::new);
 
     @Override
     public @NonNull Type<? extends CustomPacketPayload> type() {
