@@ -38,7 +38,6 @@ public class DoubleJumpRegister {
                     while (DoubleJumpRegister.doubleJump.consumeClick()){
                         //TODO: Detection works so no boost on first jump, but double jump still works after 1 jump
                         if (hasAlreadyJumped){
-                            BlockFrame.LOGGER.info(hasAlreadyJumped + " "  + client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT));
                             var longArray = new VectorPayload();
                             longArray.UUID = client.player.getStringUUID();
                             longArray.pushVector = new Vec3(0,0.25,0);
@@ -46,11 +45,9 @@ public class DoubleJumpRegister {
                             var payload = new ServerBoundMovementPayload(longArray);
                             //Send double jump
                             ClientPlayNetworking.send(payload);
-                            client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, true);
-                            hasAlreadyJumped = true;
-                        }else {
                             hasAlreadyJumped = false;
-                            client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, false);
+                        }else {
+                            hasAlreadyJumped = true;
                         }
                     }
                 }
