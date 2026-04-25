@@ -14,8 +14,9 @@ public class Codecs {
             ByteBufCodecs.DOUBLE, v -> v.pushVector.y,
             ByteBufCodecs.DOUBLE, v -> v.pushVector.z,
             ByteBufCodecs.STRING_UTF8, v -> v.UUID,
+            ByteBufCodecs.BOOL, v -> v.onGround,
             //Initializer
-            (x, y, z, uuid) -> {
+            (x, y, z, uuid, onGround) -> {
                 VectorPayload p = new VectorPayload();
                 p.pushVector = new Vec3(x, y, z);
                 p.UUID = uuid;

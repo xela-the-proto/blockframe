@@ -26,35 +26,38 @@ public class DoubleJumpRegister {
     ));
 
 
+    public static boolean hasAlreadyJumped = false;
 
     public static void registerDoubleJumpKeybind(){
 
-        ClientTickEvents.END_CLIENT_TICK.register(client ->{
+        try {
+            ClientTickEvents.END_CLIENT_TICK.register(client ->{
 
-            if (client.player != null){
+                if (client.player != null){
 
-                while (DoubleJumpRegister.doubleJump.consumeClick()){
-                    BlockFrame.LOGGER.info(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT).toString());
-                    //TODO: Detection is wonky and doesnt feel smooth
-                    if (client.player != null && Boolean.TRUE.equals(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT))){
-                        var longArray = new VectorPayload();
-                        longArray.UUID = client.player.getStringUUID();
-                        longArray.pushVector = new Vec3(0,0.25,0);
+                    while (DoubleJumpRegister.doubleJump.consumeClick()){
+                        //TODO: Detection works so no boost on first jump, but double jump still works after 1 jump
+                        if (hasAlreadyJumped){
+                            BlockFrame.LOGGER.info(hasAlreadyJumped + " "  + client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT));
+                            var longArray = new VectorPayload();
+                            longArray.UUID = client.player.getStringUUID();
+                            longArray.pushVector = new Vec3(0,0.25,0);
 
-                        var payload = new ServerBoundMovementPayload(longArray);
-                        //Send double jump
-                        ClientPlayNetworking.send(payload);
+                            var payload = new ServerBoundMovementPayload(longArray);
+                            //Send double jump
+                            ClientPlayNetworking.send(payload);
+                            client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, true);
+                            hasAlreadyJumped = true;
+                        }else {
+                            hasAlreadyJumped = false;
+                            client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, false);
+                        }
                     }
                 }
 
-                if (!client.player.onGround()){
-                     client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, false);
-                    BlockFrame.LOGGER.info("Attachment to false");
-                }else if (client.player.getDeltaMovement().y > 0 && Boolean.TRUE.equals(client.player.getAttached(DOUBLE_JUMP_DATA_ATTACHMENT))){
-                    client.player.setAttached(DOUBLE_JUMP_DATA_ATTACHMENT, true);
-                }
-            }
-
-        });
+            });
+        } catch (NullPointerException e) {
+            BlockFrame.LOGGER.error("Player doesnt have double jump data!");
+        }
     }
 }
