@@ -12,8 +12,6 @@ import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
 
-import static xela.blockframe.data.DataAttachments.DOUBLE_JUMP_DATA_ATTACHMENT;
-
 
 public class DoubleJumpRegister {
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID, "blockframe"));
@@ -26,7 +24,8 @@ public class DoubleJumpRegister {
     ));
 
 
-    public static boolean hasAlreadyJumped = false;
+    public static boolean hasJumped = false;
+    public static boolean resetFlag = false;
 
     public static void registerDoubleJumpKeybind(){
 
@@ -34,10 +33,17 @@ public class DoubleJumpRegister {
             ClientTickEvents.END_CLIENT_TICK.register(client ->{
 
                 if (client.player != null){
+                    var blockpos = client.player.blockPosition().below();
+                    double verticalDistance = client.player.position().y - blockpos.getY()-1;
+
+
+                    if (verticalDistance == 0){
+                        resetFlag = true;
+                    }
 
                     while (DoubleJumpRegister.doubleJump.consumeClick()){
-                        //TODO: Detection works so no boost on first jump, but double jump still works after 1 jump
-                        if (hasAlreadyJumped){
+                        //PLayer jumped so next input we send a packet to push the player
+                        if (hasJumped && verticalDistance != 0){
                             var longArray = new VectorPayload();
                             longArray.UUID = client.player.getStringUUID();
                             longArray.pushVector = new Vec3(0,0.25,0);
@@ -45,9 +51,11 @@ public class DoubleJumpRegister {
                             var payload = new ServerBoundMovementPayload(longArray);
                             //Send double jump
                             ClientPlayNetworking.send(payload);
-                            hasAlreadyJumped = false;
-                        }else {
-                            hasAlreadyJumped = true;
+                            hasJumped = false;
+                            resetFlag = false;
+                        }else if (resetFlag){
+                            //reset jump
+                            hasJumped = true;
                         }
                     }
                 }
