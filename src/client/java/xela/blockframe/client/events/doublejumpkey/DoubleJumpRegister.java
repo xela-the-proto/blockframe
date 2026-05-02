@@ -6,11 +6,14 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class DoubleJumpRegister {
@@ -30,33 +33,47 @@ public class DoubleJumpRegister {
     public static void registerDoubleJumpKeybind(){
 
         try {
+            AtomicInteger distance = new AtomicInteger();
+            AtomicInteger current_y = new AtomicInteger();
             ClientTickEvents.END_CLIENT_TICK.register(client ->{
 
                 if (client.player != null){
-                    var blockpos = client.player.blockPosition().below();
-                    double verticalDistance = client.player.position().y - blockpos.getY()-1;
+
+                    var blockpos = client.player.blockPosition().below(distance.get());
 
 
-                    if (verticalDistance == 0){
-                        resetFlag = true;
-                    }
+                    if (client.level != null && !client.level.getBlockState(blockpos).is(Blocks.AIR)){
 
-                    while (DoubleJumpRegister.doubleJump.consumeClick()){
-                        //PLayer jumped so next input we send a packet to push the player
-                        if (hasJumped && verticalDistance != 0){
-                            var longArray = new VectorPayload();
-                            longArray.UUID = client.player.getStringUUID();
-                            longArray.pushVector = new Vec3(0,0.25,0);
+                        current_y.set(blockpos.getY());
 
-                            var payload = new ServerBoundMovementPayload(longArray);
-                            //Send double jump
-                            ClientPlayNetworking.send(payload);
+                        if (distance.get() == 1){
+                            resetFlag = true;
                             hasJumped = false;
-                            resetFlag = false;
-                        }else if (resetFlag){
-                            //reset jump
-                            hasJumped = true;
                         }
+
+                        BlockFrame.LOGGER.info("Reset flag:" + resetFlag + " has jumped:" + hasJumped + " verticalDistance:" + distance + " currentY:" + current_y);
+
+                        while (DoubleJumpRegister.doubleJump.consumeClick()){
+                            //PLayer jumped so next input we send a packet to push the player
+                            BlockFrame.LOGGER.info("Consuming");
+                            if (hasJumped && distance.get() > 0.1 && resetFlag){
+                                var longArray = new VectorPayload();
+                                longArray.UUID = client.player.getStringUUID();
+                                longArray.pushVector = new Vec3(0,0.25,0);
+
+                                var payload = new ServerBoundMovementPayload(longArray);
+                                //Send double jump
+                                ClientPlayNetworking.send(payload);
+                                hasJumped = false;
+                                resetFlag = false;
+                            }else if (resetFlag){
+                                BlockFrame.LOGGER.info("Resetting double jump to available");
+                                //reset jump
+                                hasJumped = true;
+                            }
+                        }
+                    }else if(client.level.getBlockState(blockpos).is(Blocks.AIR)){
+                        distance.set(distance.get() + 1);
                     }
                 }
 
