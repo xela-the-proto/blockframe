@@ -1,4 +1,3 @@
-//Yea i used claude for this i couldn't figure it out :(
 package xela.blockframe.client.events.doublejumpkey;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -13,7 +12,7 @@ import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
 import xela.blockframe.network.payloads.records.ServerBoundMovementPayload;
 
-public class DoubleJumpRegister {
+public class DoubleJumpRegistrar {
     public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
             Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID, "blockframe")
     );
@@ -32,6 +31,8 @@ public class DoubleJumpRegister {
 
     public static void registerDoubleJumpKeybind() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            //Yea i used claude for this i couldn't figure it out :(
+
             if (client.player == null || client.level == null) return;
             /*
             Check every tick where we are, if we weren't on ground
@@ -48,7 +49,7 @@ public class DoubleJumpRegister {
                 resetFlag = true;
                 hasJumped = false;
                 landingCooldown = 2;
-                while (DoubleJumpRegister.doubleJump.consumeClick()) { /* scarta */ }
+                while (DoubleJumpRegistrar.doubleJump.consumeClick()) { /* scarta */ }
                 wasOnGround = true;
                 return;
             }
@@ -61,11 +62,11 @@ public class DoubleJumpRegister {
              */
             if (landingCooldown > 0) {
                 landingCooldown--;
-                while (DoubleJumpRegister.doubleJump.consumeClick()) { /* scarta */ }
+                while (DoubleJumpRegistrar.doubleJump.consumeClick()) { /* scarta */ }
                 return;
             }
 
-            while (DoubleJumpRegister.doubleJump.consumeClick()) {
+            while (DoubleJumpRegistrar.doubleJump.consumeClick()) {
                 if (isOnGround) continue;
 
                 if (hasJumped && resetFlag) {
