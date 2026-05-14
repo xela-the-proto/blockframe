@@ -72,7 +72,8 @@ public class DoubleJumpRegistrar {
                 if (hasJumped && resetFlag) {
                     var payload = new VectorPayload();
                     payload.UUID = client.player.getStringUUID();
-                    payload.pushVector = new Vec3(0, 0.25, 0);
+                    var pushVec = client.player.getLookAngle();
+                    payload.pushVector = pushVec.add(new Vec3(0, 0.25, 0));
                     ClientPlayNetworking.send(new ServerBoundMovementPayload(payload));
                     hasJumped = false;
                     resetFlag = false;
