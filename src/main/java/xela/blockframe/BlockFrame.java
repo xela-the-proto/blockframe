@@ -4,7 +4,10 @@ import net.fabricmc.api.ModInitializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xela.blockframe.events.ServerEventRegistrar;
 import xela.blockframe.items.RegisterItems;
+import xela.blockframe.network.ClientPayloadRegistrar;
+import xela.blockframe.network.ServerPayloadRegistrar;
 
 public class BlockFrame implements ModInitializer {
 	public static final String MOD_ID = "blockframe";
@@ -22,5 +25,10 @@ public class BlockFrame implements ModInitializer {
 
 		BlockFrame.LOGGER.info(":3");
 		RegisterItems.init();
+		BlockFrame.LOGGER.info("Init networking");
+		//Registrar order is important here, first Client then Server since the Client part registers packets
+		ClientPayloadRegistrar.init();
+		ServerPayloadRegistrar.init();
+		ServerEventRegistrar.init();
 	}
 }
