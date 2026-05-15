@@ -13,7 +13,7 @@ import xela.blockframe.network.payloads.classes.VectorPayload;
 /*
 Individual Payloads records
  */
-//x,y,z
+
 public record ServerBoundMovementPayload(VectorPayload vecPayload)implements CustomPacketPayload {
 
     public static final Identifier BLOCKFRAME_MOVEMENT_ID = Identifier.fromNamespaceAndPath(BlockFrame.MOD_ID,

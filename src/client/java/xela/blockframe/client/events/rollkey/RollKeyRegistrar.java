@@ -44,6 +44,7 @@ public class RollKeyRegistrar {
                         payload.UUID = client.player.getStringUUID();
                         var pushVec = client.player.getLookAngle();
                         payload.pushVector = pushVec.add(new Vec3(0, 0.25, 0));
+                        payload.typeof = "ROLL";
                         ClientPlayNetworking.send(new ServerBoundMovementPayload(payload));
                         BlockFrame.LOGGER.info(String.valueOf(ticksPassed));
                         ticksPassed = 0;

@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import xela.blockframe.BlockFrame;
 import xela.blockframe.network.payloads.classes.VectorPayload;
@@ -73,7 +72,8 @@ public class DoubleJumpRegistrar {
                     var payload = new VectorPayload();
                     payload.UUID = client.player.getStringUUID();
                     var pushVec = client.player.getLookAngle();
-                    payload.pushVector = pushVec.add(new Vec3(0, 0.25, 0));
+                    payload.pushVector = pushVec.add(0.25);
+                    payload.typeof = "DOUBLE_JUMP";
                     ClientPlayNetworking.send(new ServerBoundMovementPayload(payload));
                     hasJumped = false;
                     resetFlag = false;

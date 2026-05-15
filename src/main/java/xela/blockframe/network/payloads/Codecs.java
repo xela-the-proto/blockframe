@@ -14,12 +14,13 @@ public class Codecs {
             ByteBufCodecs.DOUBLE, v -> v.pushVector.y,
             ByteBufCodecs.DOUBLE, v -> v.pushVector.z,
             ByteBufCodecs.STRING_UTF8, v -> v.UUID,
-            ByteBufCodecs.BOOL, v -> v.onGround,
+            ByteBufCodecs.STRING_UTF8, v -> v.typeof,
             //Initializer
-            (x, y, z, uuid, onGround) -> {
+            (x, y, z, uuid, typeof) -> {
                 VectorPayload p = new VectorPayload();
                 p.pushVector = new Vec3(x, y, z);
                 p.UUID = uuid;
+                p.typeof = typeof;
                 return p;
             });
 

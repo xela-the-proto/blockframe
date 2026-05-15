@@ -7,6 +7,7 @@ import xela.blockframe.client.events.KeyHandler;
 public class BlockFrameClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+
 		BlockFrame.LOGGER.info(":3");
 		KeyHandler.init();
 	}
